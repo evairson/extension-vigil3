@@ -12,8 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.showInformationMessage('Extension "Vigil3" is now active!');
 
   // Executer npx hardhat lint sur le fichier sauvegardé
-
-
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('vigil3');
   	context.subscriptions.push(diagnosticCollection);
 
@@ -37,7 +35,35 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
       }
       // open file json_output.json and read its content
       let file = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json', 'utf8');
-      let json_output = JSON.parse(file);
+      // If file is the same as previous, do nothing
+      let previousFile = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', 'utf8');
+      if (file === previousFile) {
+        try {
+          fs.unlinkSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json');
+        } catch (err) {
+          // Ignore if file does not exist; log other errors
+          if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+            console.error('Erreur suppression slither-report.json:', err);
+            vscode.window.showErrorMessage(`Erreur suppression slither-report.json: ${(err as Error).message}`);
+          }
+        }
+        return;
+      }
+      fs.writeFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', file);  
+      // delete file 
+      try {
+        fs.unlinkSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json');
+      } catch (err) {
+        // Ignore if file does not exist; log other errors
+        if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+          console.error('Erreur suppression slither-report.json:', err);
+          vscode.window.showErrorMessage(`Erreur suppression slither-report.json: ${(err as Error).message}`);
+        }
+      }
+
+    
+      let file_output = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', 'utf8');
+      let json_output = JSON.parse(file_output);
       let diagnostics: vscode.Diagnostic[] = [];
       json_output.results.detectors.forEach((issue: any) => {
         let impact = issue.impact;
