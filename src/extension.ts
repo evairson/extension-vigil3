@@ -49,27 +49,17 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
         }
         return;
       }
-      fs.writeFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', file);  
-      // delete file 
-      try {
-        fs.unlinkSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json');
-      } catch (err) {
-        // Ignore if file does not exist; log other errors
-        if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-          console.error('Erreur suppression slither-report.json:', err);
-          vscode.window.showErrorMessage(`Erreur suppression slither-report.json: ${(err as Error).message}`);
-        }
-      }
 
-    
-      let file_output = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', 'utf8');
-      let json_output = JSON.parse(file_output);
+
+
+      let json_output = JSON.parse(file);
       let diagnostics: vscode.Diagnostic[] = [];
       json_output.results.detectors.forEach((issue: any) => {
         let impact = issue.impact;
         if (impact === 'Informational' || impact === 'Optimization' || impact === 'Low') {
           return; // Skip informational issues
         }
+        
         let check = issue.check;
         let elements = issue.elements;
         elements.forEach((element: any) => {
@@ -86,8 +76,28 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
         });
       });
       diagnosticCollection.set(document.uri, diagnostics);
+      
+      fs.writeFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', file);  
+      // delete file 
+      try {
+        fs.unlinkSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json');
+      } catch (err) {
+        // Ignore if file does not exist; log other errors
+        if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+          console.error('Erreur suppression slither-report.json:', err);
+          vscode.window.showErrorMessage(`Erreur suppression slither-report.json: ${(err as Error).message}`);
+        }
+      }
+
+    
+
     });
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+
+function askAgent() {
+  vscode.window.showInformationMessage('Agent function called');
+}
