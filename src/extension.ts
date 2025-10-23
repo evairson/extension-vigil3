@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { exec } from "child_process";
 import * as fs from 'fs';
+import { ReasonedAnalysis } from './analysis';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -27,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection) {
     exec(`source .venv/bin/activate && npx hardhat lintkey ${document.fileName}`,
-    { cwd: "/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3" }, (error, stdout, stderr) => {
+    { cwd: "/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3" }, async (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
         vscode.window.showErrorMessage(`Error: ${error.message}`);
@@ -50,7 +51,9 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
         return;
       }
 
-
+      // appel api
+      let response_ia = await askAgent(document.getText(), file, "");
+      console.log('Response from agent:', response_ia);
 
       let json_output = JSON.parse(file);
       let diagnostics: vscode.Diagnostic[] = [];
@@ -67,7 +70,7 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
           let start = new vscode.Position(map.lines[0] - 1, map.starting_column - 1);
           let end = new vscode.Position(map.lines[map.lines.length - 1] - 1, map.ending_column - 1);
           let range = new vscode.Range(start, end);
-          let message = `[${impact}] ${check}`;
+          let message = `[${impact}] ${check}: ${element.description}\nReasoning: ${response_ia.reasoning}\nSuggestions: ${response_ia.suggestions.join(' ')}`;
           let severity = impact === 'High' ? vscode.DiagnosticSeverity.Error :
                          impact === 'Medium' ? vscode.DiagnosticSeverity.Warning :
                          vscode.DiagnosticSeverity.Information;
@@ -98,6 +101,21 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
 export function deactivate() {}
 
 
-function askAgent() {
+ async function askAgent(solidity : String, slither : String, user : String) {
   vscode.window.showInformationMessage('Agent function called');
+  // api called
+  const response = await fetch("http://localhost:8000/send_audit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      solidity: solidity,
+      slither: slither,
+      user: user
+    })
+  });
+  const data = await response.json() as ReasonedAnalysis;
+  vscode.window.showInformationMessage('Response received from agent');
+  return data;
 }
