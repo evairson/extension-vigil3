@@ -1,6 +1,17 @@
-
 export class ReasonedAnalysis {
-    constructor(public vulnerabilities: string[], public reasoning: string, public suggestions: string[]) {
+    analysis: Analysis[];
 
+    constructor() {
+        this.analysis = [];
+    }
+}
+
+export class Analysis {
+    vulnerability: any;
+    reasoning: string;
+
+    constructor(vulnerability: any, reasoning: string) {
+        this.vulnerability = vulnerability;
+        this.reasoning = reasoning;
     }
 }
