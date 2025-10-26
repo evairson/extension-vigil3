@@ -3,11 +3,9 @@
 import * as vscode from 'vscode';
 import { exec } from "child_process";
 import * as fs from 'fs';
-import { ReasonedAnalysis } from './analysis';
-import { spawn } from "child_process";
-import * as path from "path";
-import { askAgent, launchAgentProcess } from './agent_utils';
-import { deleteFile, getFileVulnerabilities, markdown, parseSlitherReport } from './utils';
+import { ReasonedAnalysis } from './analysis.js';
+import { askAgent, launchAgentProcess } from './agent_utils.js';
+import { deleteFile, getFileVulnerabilities, markdown, parseSlitherReport } from './utils.js';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -16,14 +14,14 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.showInformationMessage('Extension "Vigil3" is now active!');
 
   launchAgentProcess(context);
+  // addHardhat(context);
 
   // Executer npx hardhat lint sur le fichier sauvegardé
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('vigil3');
 
 	const onSave = vscode.workspace.onDidSaveTextDocument((document) => {
-   
-    if (document.languageId === 'solidity' || document.fileName.endsWith('.sol')) {
-      runLint(document, diagnosticCollection);
+   if (document.languageId === 'solidity' || document.fileName.endsWith('.sol')) {
+      runLint(document, diagnosticCollection, context);
     }
   });
 
@@ -32,25 +30,26 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(onSave);
 }
 
-function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection) {
-    exec(`source .venv/bin/activate && npx hardhat lintkey ${document.fileName}`,
-    { cwd: "/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3" }, async (error, stdout, stderr) => {
+function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection, ctx: vscode.ExtensionContext) {
+    exec(`source .venv/bin/activate && npx hardhat vigil3 ${document.fileName}`,
+      { cwd: ctx.extensionUri.fsPath },
+       async (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
         vscode.window.showErrorMessage(`Error: ${error.message}`);
         return;
       }
       // open file json_output.json and read its content
-      let file = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json', 'utf8');
+      let file = fs.readFileSync(`${ctx.extensionUri.fsPath}/slither-${document.fileName.split('/').pop()}.json`, 'utf8');
       // If file is the same as previous, do nothing
-      let previousFile = fs.readFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', 'utf8');
-      
+      let previousFile = fs.readFileSync(`${ctx.extensionUri.fsPath}/previous-slither-report.json`, 'utf8');
+
       let json_output = getFileVulnerabilities(file);
       let previous_json_output = getFileVulnerabilities(previousFile);
 
       if (JSON.stringify(json_output) === JSON.stringify(previous_json_output) || !json_output.results || !json_output.results.detectors) {
 
-        deleteFile();
+        deleteFile(ctx, document);
         return;
       }
 
@@ -69,8 +68,8 @@ function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.Dia
         updateDiagnosticsWithAgentResponse(diagnosticCollection, document.uri, diagnostics, response_ia);
       }
 
-      fs.writeFileSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/previous-slither-report.json', file);
-      deleteFile();
+      fs.writeFileSync(`${ctx.extensionUri.fsPath}/previous-slither-report.json`, file);
+      deleteFile(ctx, document);
     });
 }
 

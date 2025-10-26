@@ -1,71 +1,29 @@
-# lintkey README
+# Vigil3 README
 
-This is the README for your extension "lintkey". After writing up a brief description, we recommend including the following sections.
+This is an extension for Visual Studio Code that provides security analysis for Solidity smart contracts using Slither and an AI agent to offer insights and recommendations : Vigil3.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Slither Integration**: Automatically analyzes Solidity files for vulnerabilities using Slither.
+- **AI Agent**: Sends analysis results to multiple AI agents for further insights and recommendations using Agentverse.
+- **Real-time Diagnostics**: Displays vulnerabilities and issues directly in the VSCode editor.
 
-For example if there is an image subfolder under your extension project workspace:
+- Link to the agentverse agents :
+    - [Audit Agent](https://agentverse.ai/agents/details/agent1qtz4tzy6n783m4ap79neh4war4jmyjny0rqvx4w3pdnve6scyexpcp94yuq/profile)
 
-\!\[feature X\]\(images/feature-x.png\)
+## Usage
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. Open a Solidity file (`.sol`) in VSCode.
+2. The extension will automatically run Slither and analyze the file.
+3. Vulnerabilities will be highlighted in the editor, and detailed information will be available in the Problems panel.
+4. The AI agent will provide additional insights based on the analysis.
 
-## Requirements
+## Configuration
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You can configure the extension settings in VSCode to customize the behavior of Slither and the AI agent.
 
-## Extension Settings
+## License
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+This project is licensed under the MIT License.
 
 **Enjoy!**

@@ -3,9 +3,9 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 
-export function deleteFile() {
+export function deleteFile(ctx: vscode.ExtensionContext, document: vscode.TextDocument) {
     try {
-    fs.unlinkSync('/Users/evaherson/Documents/travail-repo/hackathon/lintkey/Vigil3/slither-report.json');
+    fs.unlinkSync(`${ctx.extensionUri.fsPath}/slither-${document.fileName.split('/').pop()}.json`);
     } catch (err) {
     // Ignore if file does not exist; log other errors
     if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {

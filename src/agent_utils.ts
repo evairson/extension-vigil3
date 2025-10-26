@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { spawn } from "child_process";
-import { ReasonedAnalysis } from "./analysis";
+import { ReasonedAnalysis } from "./analysis.js";
 import * as path from "path";
 import * as fs from 'fs';
 import { spawnSync } from "child_process";
