@@ -1,10 +1,11 @@
 {
   "name": "vigil3",
   "displayName": "vigil3",
-  "description": "",
-  "version": "0.0.1",
+  "description": "Vigil3 is a VS Code extension that integrates Vigil3's smart contract security features directly into your development environment. It provides real-time vulnerability detection, security analysis, and best practice recommendations as you write and deploy smart contracts, helping developers enhance the security of their blockchain applications effortlessly.",
+  "version": "0.0.2",
+  "publisher": "EvaHerson",
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.105.0"
   },
   "categories": [
     "Other"

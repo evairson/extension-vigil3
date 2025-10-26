@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection, ctx: vscode.ExtensionContext) {
-    exec(`source .venv/bin/activate && npx hardhat vigil3 ${document.fileName}`,
+    exec(`npm install && source .venv/bin/activate && npx hardhat vigil3 ${document.fileName}`,
       { cwd: ctx.extensionUri.fsPath },
        async (error, stdout, stderr) => {
       if (error) {
