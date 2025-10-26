@@ -15,6 +15,14 @@ export function activate(context: vscode.ExtensionContext) {
 
   launchAgentProcess(context);
   // addHardhat(context);
+  exec(`npm install`, { cwd: context.extensionUri.fsPath }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
 
   // Executer npx hardhat lint sur le fichier sauvegardé
 	const diagnosticCollection = vscode.languages.createDiagnosticCollection('vigil3');
@@ -31,7 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function runLint(document: vscode.TextDocument, diagnosticCollection: vscode.DiagnosticCollection, ctx: vscode.ExtensionContext) {
-    exec(`npm install && source .venv/bin/activate && npx hardhat vigil3 ${document.fileName}`,
+    exec(`source .venv/bin/activate && npx hardhat vigil3 ${document.fileName} --config "${ctx.extensionUri.fsPath}/hardhat.config.ts"`,
       { cwd: ctx.extensionUri.fsPath },
        async (error, stdout, stderr) => {
       if (error) {
